@@ -5,7 +5,7 @@ setup(
     version="0.1",
     # packages=find_packages(),
     packages=find_packages(where='./eyetrackpy/'),
-    package_dir={"": './eyetrackpy/'},
+    # package_dir={"": './eyetrackpy/'},
     install_requires=[
         # List your dependencies here
         'numpy',

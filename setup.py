@@ -1,9 +1,11 @@
 from setuptools import setup, find_packages
-
+import os
 setup(
     name="eyetrackpy",
     version="0.1",
-    packages=find_packages(),
+    # packages=find_packages(),
+    packages=find_packages(where=os.path.abspath('eyetrackpy/')),
+    package_dir={"": os.path.abspath('eyetrackpy/')},
     install_requires=[
         # List your dependencies here
         'numpy',

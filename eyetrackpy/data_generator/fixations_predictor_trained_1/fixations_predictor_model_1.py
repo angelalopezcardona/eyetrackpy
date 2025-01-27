@@ -74,7 +74,7 @@ class FixationsPredictor_1:
             FP_dir = os.path.join(
                 path,
                 "fixations_predictor_trained_1",
-                "FPmodels",
+                # "FPmodels",
                 "T5-tokenizer-BiLSTM-TRT-12-concat-3",
             )
             self.model.load_state_dict(torch.load(FP_dir))
@@ -83,7 +83,7 @@ class FixationsPredictor_1:
             FP_dir = os.path.join(
                 path,
                 "fixations_predictor_trained_1",
-                "FPmodels",
+                # "FPmodels",
                 "T5-tokenizer-BiLSTM-TRT-12-concat-3",
             )
             self.model.load_state_dict(torch.load(FP_dir))

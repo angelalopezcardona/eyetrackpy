@@ -8,25 +8,38 @@ class CustomInstallCommand(install):
         # Run the standard install process
         install.run(self)
         
-        # Download weights and save to the desired location
-        url = "https://drive.google.com/uc?id=1CTiali54Q7zsT25ciY0y0sIIf2jZVbZG&export=download"
-        local_path = "eyetrackpy/data_generator/fixations_predictor_trained_2/FPmodels/model.pth"
+        # Define files to download
+        files_to_download = [
+            {
+                "url": "https://drive.google.com/uc?id=1CTiali54Q7zsT25ciY0y0sIIf2jZVbZG&export=download",
+                "local_path": "eyetrackpy/data_generator/fixations_predictor_trained_2/model.pth",
+            },
+            {
+                "url": "https://drive.google.com/uc?id=1_skRPxLzlY3d68bKk1cf656pYFc--URt&export=download",
+                "local_path": "eyetrackpy/data_generator/fixations_predictor_trained_1/T5-tokenizer-BiLSTM-TRT-12-concat-3",
+            },
+        ]
 
-        # Ensure the directory exists
-        directory = os.path.dirname(local_path)
-        if not os.path.exists(directory):
-            print(f"Creating directory: {directory}")
-            os.makedirs(directory)
+        # Process each file
+        for file in files_to_download:
+            url = file["url"]
+            local_path = file["local_path"]
+            directory = os.path.dirname(local_path)
 
-        # Download and save the file
-        print("Downloading weights...")
-        response = requests.get(url)
-        if response.status_code == 200:
-            with open(local_path, "wb") as f:
-                f.write(response.content)
-            print(f"File saved to: {local_path}")
-        else:
-            print(f"Failed to download file. Status code: {response.status_code}")
+            # Ensure the directory exists
+            if not os.path.exists(directory):
+                print(f"Creating directory: {directory}")
+                os.makedirs(directory)
+
+            # Download and save the file
+            print(f"Downloading from {url}...")
+            response = requests.get(url)
+            if response.status_code == 200:
+                with open(local_path, "wb") as f:
+                    f.write(response.content)
+                print(f"File saved to: {local_path}")
+            else:
+                print(f"Failed to download file from {url}. Status code: {response.status_code}")
 
 
 setup(

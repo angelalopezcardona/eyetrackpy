@@ -238,7 +238,7 @@ class FixationsPredictor_2:
     def __init__(
         self,
         model_name="roberta-base",
-        model_path=str(pathlib.Path(__file__).parent.resolve()) + "/FPmodels/model.pth",
+        model_path=str(pathlib.Path(__file__).parent.resolve()) + "/model.pth",
         modelTokenizer=None,
         remap=True,
     ):

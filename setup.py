@@ -26,7 +26,7 @@ class CustomInstallCommand(install):
             url = file["url"]
             local_path = file["local_path"]
             full_local_path = os.path.join(current_dir, local_path)
-            directory = os.path.dirname(local_path)
+            directory = os.path.dirname(full_local_path)
 
             # Ensure the directory exists
             if not os.path.exists(directory):

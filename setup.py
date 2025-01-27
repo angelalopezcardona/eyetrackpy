@@ -21,9 +21,11 @@ class CustomInstallCommand(install):
         ]
 
         # Process each file
+        current_dir = os.getcwd()
         for file in files_to_download:
             url = file["url"]
             local_path = file["local_path"]
+            full_local_path = os.path.join(current_dir, local_path)
             directory = os.path.dirname(local_path)
 
             # Ensure the directory exists

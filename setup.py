@@ -53,7 +53,7 @@ setup(
         # List your dependencies here
         'numpy',
         'pandas',
-        "requests",
+        "gdown",
         # Add other dependencies as needed
     ],
     #  cmdclass={

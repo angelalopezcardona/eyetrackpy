@@ -3,12 +3,12 @@ import requests
 
 MODEL_FILES = {
     "model_1": {
-        "url": "https://drive.google.com/uc?id=1CTiali54Q7zsT25ciY0y0sIIf2jZVbZG&export=download",
-        "local_path": "data_generator/fixations_predictor_trained_2/model.pth",
-    },
-    "model_2": {
         "url": "https://drive.google.com/uc?id=1_skRPxLzlY3d68bKk1cf656pYFc--URt&export=download",
         "local_path": "data_generator/fixations_predictor_trained_1/T5-tokenizer-BiLSTM-TRT-12-concat-3",
+    },
+    "model_2": {
+        "url": "https://drive.google.com/uc?id=1CTiali54Q7zsT25ciY0y0sIIf2jZVbZG&export=download",
+        "local_path": "data_generator/fixations_predictor_trained_2/model.pth",
     }
 }
 

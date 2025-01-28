@@ -2,7 +2,7 @@ import torch
 import transformers
 import sys
 import pathlib
-
+import os
 sys.path.append("../..")
 path = str(pathlib.Path(__file__).parent.resolve())
 sys.path.append(path)
@@ -21,7 +21,7 @@ sys.path.append(path)
 import threading
 from tokenizeraligner.models.tokenizer_aligner import TokenizerAligner
 from eyetrackpy.data_generator.models.fixations_aligner import FixationsAligner
-
+from data_generator.fixations_predictor.models.model_manager import download_model
 import re
 
 device = torch.device("cuda")
@@ -246,6 +246,9 @@ class FixationsPredictor_2:
         # device = torch.device('cuda')
         # self.model = RobertaRegressionModel(model_name).to(device)
         self.model = RobertaRegressionModel(model_name)
+        #check if model_path is a file
+        if not os.path.isfile(model_path):
+            download_model('model_2')
         self.model.load_state_dict(torch.load(model_path))
         self.model.eval()
         self.fixTokenizer = transformers.RobertaTokenizerFast.from_pretrained(

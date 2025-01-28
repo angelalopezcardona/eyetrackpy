@@ -7,7 +7,7 @@ from tokenizeraligner.models.tokenizer_aligner import TokenizerAligner
 from eyetrackpy.data_generator.models.fixations_aligner import FixationsAligner
 from collections.abc import Iterable
 import re
-
+from data_generator.fixations_predictor.models.model_manager import download_model
 
 class BiLSTMRegression(nn.Module):
     def __init__(self, embedding, hidden_dim, drop_out) -> None:
@@ -77,6 +77,9 @@ class FixationsPredictor_1:
                 # "FPmodels",
                 "T5-tokenizer-BiLSTM-TRT-12-concat-3",
             )
+            if not os.path.isfile(FP_dir):
+                download_model('model_1')
+
             self.model.load_state_dict(torch.load(FP_dir))
         except:
             path = str(pathlib.Path(__file__).parent.resolve().parent.resolve())

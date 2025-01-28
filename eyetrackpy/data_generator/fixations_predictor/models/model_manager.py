@@ -17,7 +17,8 @@ def download_model(model_name):
         raise ValueError(f"Unknown model: {model_name}")
     
     model_info = MODEL_FILES[model_name]
-    package_dir = os.path.dirname(os.path.abspath(__file__))
+    package_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    # package_dir = os.path.dirname(os.path.abspath(__file__))
     full_path = os.path.join(package_dir, model_info["local_path"])
     
     # Check if model already exists

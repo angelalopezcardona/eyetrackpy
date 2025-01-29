@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 import os
-import requests
 # Custom install command to download weights
 # class CustomInstallCommand(install):
 #     def run(self):

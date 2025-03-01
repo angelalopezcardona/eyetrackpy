@@ -7,7 +7,7 @@ from tokenizeraligner.models.tokenizer_aligner import TokenizerAligner
 from eyetrackpy.data_generator.models.fixations_aligner import FixationsAligner
 from collections.abc import Iterable
 import re
-from eyetrackpy,data_generator.fixations_predictor.models.model_manager import download_model
+from eyetrackpy.data_generator.fixations_predictor.models.model_manager import download_model
 
 class BiLSTMRegression(nn.Module):
     def __init__(self, embedding, hidden_dim, drop_out) -> None:

@@ -94,16 +94,14 @@ All model weights are automatically downloaded when you first use each model. Th
 
 ### 2. Data Processor
 Tools for processing and analyzing eye tracking data, including:
-- Raw data cleaning and filtering
-- Fixation detection algorithms
-- Data validation and transformation
+- Words straction from images
+- Algorithms to asign fixations to words
 
 ### 3. Data printer
 Visualization tools for:
-- Heatmap generation
 - Scanpath visualization
-- Temporal attention patterns
-- Saliency map overlays
+- Reading measures over text
+- Saliency map 
 
 ## Examples
 The `examples` folder contains practical implementations demonstrating how to:

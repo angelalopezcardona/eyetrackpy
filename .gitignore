@@ -169,3 +169,4 @@ tests/
 eyetrackpy/data_generator/fixations_predictor_trained_1/T5-tokenizer-BiLSTM-TRT-12-concat-3
 eyetrackpy/data_generator/fixations_predictor_trained_2/model.pth
 cache/
+eyetrackpy/data_generator/fixations_predictor_mdsem/mdsem_codecharts0_cameraready_weights.hdf5

@@ -62,4 +62,3 @@ if __name__ == "__main__":
     model_tok_combined_all, fix_tok_combined_all = create_fixations.process_data(
         dataloader
     )
-    print("angela")

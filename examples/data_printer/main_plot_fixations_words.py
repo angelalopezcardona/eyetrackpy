@@ -1,4 +1,4 @@
-from models.fixations_plotter import FixationsPlotter
+from eyetrackpy.data_generator.fixations_plotter import FixationsPlotter
 
 words_with_numbers = [
     ("in", 0),

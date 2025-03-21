@@ -314,8 +314,8 @@ class FixationsPredictor_2:
         # compute fixations
         if input_ids_original is not None:
             input_ids_original = input_ids_original.detach()
-        X_ids = text_tokenized_fix["input_ids"].to(device)
-        fixations_attention_mask = text_tokenized_fix["attention_mask"].to(device)
+        X_ids = text_tokenized_fix["input_ids"].to(self.model.roberta.device)
+        fixations_attention_mask = text_tokenized_fix["attention_mask"].to(self.model.roberta.device)
         # we compute first_token_word because the model was trained to predict only for the first token of each word
         first_token_word = TokenizerAligner().search_first_token_word(
             text_tokenized_fix

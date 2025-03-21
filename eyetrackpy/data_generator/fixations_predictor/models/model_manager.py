@@ -9,6 +9,10 @@ MODEL_FILES = {
     "model_2": {
         "url": "https://drive.google.com/uc?id=1CTiali54Q7zsT25ciY0y0sIIf2jZVbZG",
         "local_path": "data_generator/fixations_predictor_trained_2/model.pth",
+    },
+    "mdsem": {
+        "url": "https://drive.google.com/uc?id=1piMiLmRveWacGkE48JbfA7nPZfZw2zNQ",
+        "local_path": "data_generator/fixations_predictor_mdsem/mdsem_codecharts0_cameraready_weights.hdf5",
     }
 }
 

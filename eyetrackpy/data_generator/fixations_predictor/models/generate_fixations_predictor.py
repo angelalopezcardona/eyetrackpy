@@ -325,3 +325,16 @@ class CreateFixationsPredictorModel:
             )
 
         return fixations_all
+
+    def predict_fromtext(self, sentences):
+        (
+            fixations,
+            fixations_attention_mask,
+            mapped_fixations,
+            model_tok,
+            fix_tok,
+            sentences,
+        ) = self.FP_model._compute_mapped_fixations(sentences = sentences)
+            
+
+        return fixations

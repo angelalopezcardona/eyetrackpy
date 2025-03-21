@@ -2,8 +2,6 @@
 
 EyeTrackPy is a Python library for eye tracking analysis and prediction. The library consists of three main modules and includes example implementations.
 
-## Project Structure
-
 ## Modules
 
 ### 1. Data Generator
@@ -14,8 +12,11 @@ It can integrate fixations_predictor_trained_1 and fixations_predictor_trained_2
 First, we perform an initial mapping of tokens to the words they belong to in each tokenizer with some properties of \textit{FastTokenizers} from the \textit{transformers} library. Then, we map words from one tokenizer to the words in the other and finally, we assume that the combination of the tokens that are mapped to a word in one tokenizer correspond to the tokens that are mapped to the word that is mapped to the initial word in the other tokenizer. 
 
 For each predictor, we reverse the method used to convert word-level features into token-level features but passing from tokens in the first one, to tokens in the second tokenizer. For example, if for the first \acrshort{et} features predictor models tokens $t_{1},t_{2}$ are mapped to tokens $t_{1},t_{2},t_{3}$ in another second tokenizer, the values sum for all the tokens in the first list and distribute them equally across all the tokens in the second list: being $t_{1}$ (1s TRT) and $t_{2}$ (2s TRT) each of $t_{1},t_{2},t_{3}$ are assigned a TRT of $(1+2)/3=1s$.  
-
-## Token Mapping Example
+To be able to map between tokenizers you need to install:
+```sh
+pip install git+https://github.com/anlopez94/tokenizer_aligner.git@v1.0.0
+```
+**Token Mapping Example**
 
 Example of mapping Total Reading Time (TRT) between two different tokenizers:
 
@@ -46,7 +47,7 @@ If you use this model, please cite:
   year={2023}
 }
 ```
-#### fixations_predictor_trained_2:Text Reading Measures Predictor
+#### fixations_predictor_trained_2: Text Reading Measures Predictor
 - Predicts 5 key reading measures
 - Based on the TorontoCL model from CMCL 2021 Shared Task
 - Uses RoBERTa with multi-stage fine-tuning
@@ -67,7 +68,7 @@ If you use this model, please cite:
 }
 ```
 
-#### fixations_predictor_trained_3: Image Saliency Predictor (MD-SEM)
+#### fixations_predictor_trained_mdsem: Image Saliency Predictor (MD-SEM)
 - Predicts visual importance and attention patterns across graphic design images
 - Multi-duration saliency estimation model based on human eye-tracking data
 - Generates predictions for different viewing durations (500ms, 3000ms, 5000ms)
@@ -150,6 +151,11 @@ Data Generator module:
 - TensorFlow (for MDSEM model)
 - PyTorch (for fixation prediction models)
 - OpenCV
+- To be able to map fixations, run the following command:
+
+```sh
+pip install git+https://github.com/anlopez94/tokenizer_aligner.git@v1.0.0
+```
 
 Data Processor & Printer modules:
 - OpenCV

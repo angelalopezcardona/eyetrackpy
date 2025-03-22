@@ -131,8 +131,8 @@ python main_plot_fixations_words.py
 
 ## Installation
 
-```bash
-pip install eyetrackpy
+```sh
+pip install git+https://github.com/anlopez94/eyetrackpy.git
 ```
 
 
@@ -152,7 +152,7 @@ Data Generator module:
 - To be able to map fixations, run the following command:
 
 ```sh
-pip install git+https://github.com/anlopez94/tokenizer_aligner.git@v1.0.0
+pip install git+https://github.com/anlopez94/tokenizer_aligner.git
 ```
 
 Data Processor & Printer modules:

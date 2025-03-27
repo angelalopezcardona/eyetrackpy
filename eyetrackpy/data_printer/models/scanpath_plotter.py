@@ -75,7 +75,7 @@ class ScanpathPlotter():
             if not os.path.exists(save_directory):
                 os.makedirs(save_directory)
             image_name_save = image_path.split('/')[-1]
-            image_fixations_path = save_directory + '/' + image_name_save
+            image_fixations_path = save_directory + '/' + 'scanpath_' + image_name_save
         else:
             image_fixations_path = None
         img = cv2.imread(image_path)

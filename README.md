@@ -123,6 +123,10 @@ python main_plot_scanpaths.py
 ```
 
 - Visualize saliency maps on images
+```bash
+cd examples/data_printer
+python main_plot_saliency.py
+```
 - Visualize reading metrics on text
 ```bash
 cd examples/data_printer

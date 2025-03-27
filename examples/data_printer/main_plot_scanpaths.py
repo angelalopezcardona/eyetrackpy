@@ -12,7 +12,7 @@ from eyetrackpy.data_processor.models.gazepoint import Gazepoint
 plotter = ScanpathPlotter()
 fixations = pd.read_csv(cwd + '/examples/data/fixations.csv')
 image_path = cwd + '/examples/data/example_image.png'
-save_directory = cwd + '/examples/results/'
+save_directory = cwd + '/examples/data_printer/results/'
 fixations = Gazepoint().preprocess_fixations_trial(fixations)
 plotter.plot_image(image_path=image_path, fixations=fixations, save_directory=save_directory)
 

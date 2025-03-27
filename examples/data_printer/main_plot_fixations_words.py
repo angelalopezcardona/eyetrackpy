@@ -1,4 +1,10 @@
-from eyetrackpy.data_generator.fixations_plotter import FixationsPlotter
+import os
+import sys
+
+# Get the current working directory and add it to path
+cwd = os.getcwd()
+sys.path.append(cwd)
+from eyetrackpy.data_printer.models.fixations_plotter import FixationsPlotter
 
 words_with_numbers = [
     ("in", 0),
@@ -22,4 +28,5 @@ words_with_numbers = [
     ("records", 55),
 ]
 # plot_fixations(words_with_numbers)
-FixationsPlotter.plot_fixations(words_with_numbers)
+save_directory = cwd + '/examples/data_printer/results/'
+FixationsPlotter.plot_fixations(words_with_numbers, save_path = save_directory + 'fixations_words.png')

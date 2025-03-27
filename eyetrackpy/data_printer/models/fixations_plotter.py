@@ -14,7 +14,7 @@ class FixationsPlotter:
     ]"""
 
     @staticmethod
-    def plot_fixations(words_with_numbers, save_path=None, add_numbers=False):
+    def plot_fixations_deprecated(words_with_numbers, save_path=None, add_numbers=False):
         # Define the number of columns for the grid
         n_columns = 10
 
@@ -113,15 +113,15 @@ class FixationsPlotter:
         # print(words)
         for i in range(0, len(words)):
             # print(words_line_character + len(words[i]))
-            if words_line_character + len(words[i]) > max_char_per_line:
-                words_line_character += len(words[i]) + 1
+            if words_line_character + len(str(words[i])) > max_char_per_line:
+                words_line_character += len(str(words[i])) + 1
                 words_line_id.append(i)
                 lines.append([words[j] for j in words_line_id])
                 line_values.append([values[j] for j in words_line_id])
                 words_line_character = 0
                 words_line_id = []
             else:
-                words_line_character += len(words[i]) + 1
+                words_line_character += len(str(words[i])) + 1
                 words_line_id.append(i)
         lines.append([words[j] for j in words_line_id])
         line_values.append([values[j] for j in words_line_id])
@@ -159,19 +159,14 @@ class FixationsPlotter:
 
         # Plot each word with its corresponding color on multiple lines
         max_i = []
+        adding_space = 15
+        scale_factor = 6
         for line_num, (line, vals) in enumerate(zip(lines, line_values)):
-            prev_i = 0
-            prev_adding_space = 0.05
-            for i, (word, value) in enumerate(zip(line, vals)):
-                num_chars = len(word)  # Get the number of characters in the word
-                # Example base value (can be decimal)
-                scale_factor = 0.1  # Example scale factor (can also be decimal)
-                # Adjust 'i' based on the number of characters (allowing for decimal values)
-                adding_space = 0.1 + (num_chars) * scale_factor
-                i = prev_i + prev_adding_space + adding_space
-                # print(prev_i, i)
+            x_position = 0
+            for word, value in zip(line, vals):
+                x_position += len(str(word))/2 * scale_factor + adding_space
                 ax.text(
-                    i,
+                    x_position,
                     -line_num,
                     word,
                     fontsize=12,
@@ -183,12 +178,12 @@ class FixationsPlotter:
                         boxstyle="round,pad=0.3",
                     ),
                 )
-                prev_i = i
-                prev_adding_space = adding_space
-                max_i.append(i + adding_space)
+                x_position += len(str(word))/2 * scale_factor + adding_space
+                # prev_adding_space = adding_space
+                max_i.append(x_position + adding_space)
         # Set limits and hide axes
         # ax.set_xlim(-1, i)
-        ax.set_xlim(-1, max(max_i))
+        ax.set_xlim(0, max(max_i))
         ax.set_ylim(-len(lines), 1)
         ax.axis("off")
 
@@ -198,5 +193,51 @@ class FixationsPlotter:
                 save_path, dpi=300, bbox_inches="tight"
             )  # Save with better layout
 
+        plt.tight_layout()
+        plt.show()
+
+    def plot_text_with_values(self, lines, values):
+        # Set up the plot
+        fig, ax = plt.subplots(figsize=(8, len(lines) / 2))
+
+        # Create a colormap (blue for low values, red for high values)
+        cmap = sns.color_palette("light:#5A9_r", as_cmap=True)
+
+        # Normalize values between 0 and 1
+        norm = colors.Normalize(vmin=min(values), vmax=max(values))
+
+        x_position = 0  # Start at the left margin
+        for line_num, (line, vals) in enumerate(zip(lines, values)):
+            for word, value in zip(line, vals):
+                # Add some padding before the word
+                word_padding = 10  # Adjust this value for desired word spacing
+                
+                ax.text(
+                    x_position,
+                    -line_num,
+                    word,
+                    fontsize=12,
+                    ha="left",  # Align to the left of x_position
+                    va="center",
+                    bbox=dict(
+                        facecolor=cmap(norm(value)),
+                        edgecolor="none",
+                        boxstyle="round,pad=0.3",
+                    ),
+                )
+                
+                # Calculate next word position:
+                # Current position + word length + padding
+                x_position += len(word) * 8 + word_padding  # 8 pixels per character (approximate)
+            
+            # Reset x_position for new line
+            x_position = 0
+        
+        # Set limits and hide axes
+        ax.set_xlim(-1, x_position)
+        ax.set_ylim(-len(lines), 1)
+        ax.axis("off")
+
+        # Show the plot
         plt.tight_layout()
         plt.show()

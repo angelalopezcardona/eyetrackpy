@@ -7,11 +7,9 @@ from skimage.filters import threshold_otsu
 
 class SaliencyGenerator():
  
-
-
     def generate_saliency_map(self, image_path: str, fixations: np.ndarray, scale_fixations: bool = False, 
                              sigma: int = 60, alpha: float = 0.6, weight_factor: float = 3.0, 
-                             return_overlay: bool = True) -> np.ndarray:
+                             return_overlay: bool = False) -> np.ndarray:
         """
         Generates a saliency map based on multiple fixation points.
 

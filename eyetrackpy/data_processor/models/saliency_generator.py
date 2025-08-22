@@ -7,7 +7,7 @@ from skimage.filters import threshold_otsu
 
 class SaliencyGenerator():
  
-    def generate_saliency_map(self, image_path: str, fixations: np.ndarray, scale_fixations: bool = False, 
+    def generate_saliency_map(self, image_path: str, fixations: np.ndarray, scale_fixations: bool = True, 
                              sigma: int = 60, alpha: float = 0.6, weight_factor: float = 3.0, 
                              return_overlay: bool = False) -> np.ndarray:
         """
@@ -118,6 +118,8 @@ class SaliencyGenerator():
         fixations['x'] = fixations['x'] * width
         fixations['y'] = fixations['y'] * height
         return fixations
+    
+    
     
     @staticmethod
     def compute_shannon_entropy(saliency_map: np.ndarray) -> float:

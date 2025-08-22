@@ -97,7 +97,7 @@ class SaliencyGenerator():
         # Blend saliency map with the original image
         overlay = cv2.addWeighted(image_, 1 - alpha, heatmap, alpha, 0)
         
-        return overlay
+        return saliency_map, overlay
     
 
 
@@ -108,7 +108,11 @@ class SaliencyGenerator():
         return fixations[['x', 'y']].to_numpy()
 
     def save_saliency_map(self, overlay, figure_name, folder):
-         cv2.imwrite(f"{folder}/{figure_name}", overlay)
+        # Ensure folder path ends with '/' for proper path concatenation
+        if not folder.endswith('/'):
+            folder = folder + '/'
+        
+        cv2.imwrite(f"{folder}{figure_name}", overlay)
 
     def _scale_fixations(self, fixations, width, height):
         fixations['x'] = fixations['x'] * width

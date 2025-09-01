@@ -13,6 +13,10 @@ MODEL_FILES = {
     "mdsem": {
         "url": "https://drive.google.com/uc?id=1piMiLmRveWacGkE48JbfA7nPZfZw2zNQ",
         "local_path": "data_generator/fixations_predictor_mdsem/mdsem_codecharts0_cameraready_weights.hdf5",
+    },
+    "visalformer": {
+        "url": "",
+        "local_path": "data_generator/visalformer/VisSalFormer_weights.tar",
     }
 }
 

@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 import os
 import sys
 import argparse
-from dataset_new import ImagesWithSaliency
+from eyetrackpy.data_generator.visalformer.dataset import ImagesWithSaliency
 from torchvision.utils import save_image
 from transformers import SwinModel
 from pathlib import Path

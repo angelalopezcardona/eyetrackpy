@@ -26,7 +26,10 @@ class SaliencyGenerator():
             np.ndarray: Saliency map overlay or raw saliency map based on return_overlay parameter.
         """
         # Load and validate image
-        image_ = cv2.imread(image_path)
+        if isinstance(image_path, np.ndarray):
+            image_ = image_path
+        else:
+            image_ = cv2.imread(image_path)
         if image_ is None:
             raise ValueError(f"Could not load image from path: {image_path}")
         

@@ -1,5 +1,7 @@
 import torch
-
+from transformers import BertModel
+from transformers import SwinModel
+    
 class SalFormer(torch.nn.Module):
     def __init__(self, vision_encoder, bert):
         """
@@ -114,3 +116,19 @@ class SalFormer(torch.nn.Module):
         out = self.decoder(out)
 
         return out
+
+    @classmethod
+    def from_pretrained(cls, swim_name = "microsoft/swin-tiny-patch4-window7-224", bert_name = "bert-base-uncased"):
+        
+        llm = BertModel.from_pretrained(bert_name)
+        vit = SwinModel.from_pretrained(swim_name)
+        
+        return cls(vit, llm)
+
+    def load_ckpt(self, ckpt, device):
+        checkpoint = torch.load(ckpt, map_location=device)
+        self.load_state_dict(checkpoint['model_state_dict'])
+        self.to(device)
+        self.eval()
+        if device == 'cuda':
+            torch.cuda.empty_cache()

@@ -87,6 +87,25 @@ If you use this model, please cite:
 	year = {2020},
 }
 ```
+#### visalformer: Saliency Predictor
+- Predicts visual importance and attention patterns across images
+- Based on the Visalformer model from the paper cited below
+- Pre-trained weights are automatically downloaded on first use
+
+If you use this model, please cite:
+
+```bibtex
+@inproceedings{wang2024salchartqa,
+  title={SalChartQA: Question-driven Saliency on Information Visualisations},
+  author={Wang, Yao and Wang, Weitian and Abdelhafez, Abdullah and Elfares, Mayar and Hu, Zhiming and Bâce, Mihai and Bulling, Andreas},
+  booktitle={Proceedings of the 2024 CHI Conference on Human Factors in Computing Systems},
+  pages={1--15},
+  year={2024},
+  organization={ACM},
+  address={New York, NY, USA}
+}
+```
+
 #### Pre-trained Weights
 All model weights are automatically downloaded when you first use each model. The weights are:
 - Stored in their respective model directories

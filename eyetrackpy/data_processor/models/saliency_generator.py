@@ -79,15 +79,15 @@ class SaliencyGenerator():
         if saliency_map.max() > 0:
             saliency_map = cv2.normalize(saliency_map, None, 0, 255, cv2.NORM_MINMAX)
         
-        # Enhance contrast for better visualization
-        saliency_map = np.power(saliency_map, 1.5)
-        saliency_map = cv2.normalize(saliency_map, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
-        
         if not return_overlay:
             return saliency_map
         
+        # Enhance contrast for better visualization
+        saliency_map_visualization = np.power(saliency_map, 1.5)
+        saliency_map_visualization = cv2.normalize(saliency_map_visualization, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+
         # Create overlay visualization
-        heatmap = cv2.applyColorMap(saliency_map, cv2.COLORMAP_JET)
+        heatmap = cv2.applyColorMap(saliency_map_visualization, cv2.COLORMAP_JET)
         
         # Ensure heatmap matches image size
         if heatmap.shape[:2] != (height, width):

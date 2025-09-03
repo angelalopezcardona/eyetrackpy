@@ -55,10 +55,9 @@ class VisalformerSaliencyPredictor:
 
     
     def predict(self, dataloader, save_path):
-
      
-        results_path_saliency = save_path + '/saliency'
-        results_path_all = save_path + '/all'
+        results_path_saliency = save_path + '/visalformer/saliency'
+        results_path_all = save_path + '/visalformer/all'
         Path(results_path_saliency).mkdir(parents=True, exist_ok=True)
         Path(results_path_all).mkdir(parents=True, exist_ok=True)
 

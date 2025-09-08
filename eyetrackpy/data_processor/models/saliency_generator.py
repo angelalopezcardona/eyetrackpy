@@ -103,6 +103,45 @@ class SaliencyGenerator():
         return saliency_map, overlay
     
 
+    def create_overlay_and_save_saliency_map(self, image: str, saliency_map: np.ndarray, alpha: float = 0.6, folder: str = None, figure_name: str = None) -> np.ndarray:
+        """
+        Generates a saliency map based on multiple fixation points.
+
+        Args:
+
+
+        Returns:
+            np.ndarray: Saliency map overlay or raw saliency map based on return_overlay parameter.
+        """
+        # Load and validate image
+        if isinstance(image, np.ndarray):
+            image_ = image
+        else:
+            image_ = cv2.imread(image)
+        
+        height, width = image_.shape[:2]
+        
+        
+        # Enhance contrast for better visualization
+        saliency_map_visualization = np.power(saliency_map, 1.5)
+        saliency_map_visualization = cv2.normalize(saliency_map_visualization, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+
+        # Create overlay visualization
+        heatmap = cv2.applyColorMap(saliency_map_visualization, cv2.COLORMAP_JET)
+        
+        # Ensure heatmap matches image size
+        if heatmap.shape[:2] != (height, width):
+            heatmap = cv2.resize(heatmap, (width, height))
+        
+        # Convert grayscale to RGB if needed
+        if len(image_.shape) == 2 or image_.shape[2] == 1:
+            image_ = cv2.cvtColor(image_, cv2.COLOR_GRAY2BGR)
+        
+        # Blend saliency map with the original image
+        overlay = cv2.addWeighted(image_, 1 - alpha, heatmap, alpha, 0)
+        self.save_saliency_map(overlay, figure_name, folder)
+        
+        return True
 
 
     def _convert_fixations_to_numpy(self, fixations):

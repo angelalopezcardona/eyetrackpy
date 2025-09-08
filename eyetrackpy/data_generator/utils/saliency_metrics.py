@@ -13,15 +13,18 @@ def compute_cc(y: torch.Tensor, hm: torch.Tensor):
 
 
 def compute_kl(y: torch.Tensor, hm: torch.Tensor):
+    eps = 1e-10
     kl_loss = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
-    eps=1e-10
-    y_sum = y.view(y.shape[0], -1).sum(1, keepdim=True)
-    y_distribution = y / (y_sum[:, :, None, None] + eps)
 
-    hm_sum = hm.view(y.shape[0], -1).sum(1, keepdim=True)
-    hm_distribution = hm / (hm_sum[:, :, None, None] + eps)
-    hm_distribution = hm_distribution + eps
-    hm_distribution = hm_distribution / (1+eps)
+    # Normalizza in distribuzioni
+    y_distribution = y / (y.view(y.shape[0], -1).sum(1, keepdim=True)[:, :, None, None] + eps)
+    hm_distribution = hm / (hm.view(hm.shape[0], -1).sum(1, keepdim=True)[:, :, None, None] + eps)
+
+    # Evita log(0)
+    y_distribution = torch.clamp(y_distribution, min=eps)
+    hm_distribution = torch.clamp(hm_distribution, min=eps)
+
+    # KL(gt || model)
     kl = kl_loss(torch.log(y_distribution), torch.log(hm_distribution))
     return kl
 
@@ -53,7 +56,7 @@ def compute_auc(y: torch.Tensor, fix: torch.Tensor):
     
     # Check if we have both positive and negative samples
     if len(np.unique(fix_binary)) < 2:
-        return 0.5  # Random performance if no fixations or all fixations
+        return torch.tensor(0.5, dtype=torch.float32)  # Random performance if no fixations or all fixations
     
     try:
         auc = roc_auc_score(fix_binary, y_np)

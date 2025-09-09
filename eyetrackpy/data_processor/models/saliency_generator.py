@@ -42,7 +42,6 @@ class SaliencyGenerator():
         if len(valid_fixations) == 0:
             raise ValueError("No valid fixation points found within image boundaries")
         
-        # ---- Minimal fix starts here ----
         # Build an impulse map (delta peaks) instead of drawing disks and blurring each one
         impulse = np.zeros((height, width), dtype=np.float32)
         for (x, y) in valid_fixations:
@@ -57,16 +56,24 @@ class SaliencyGenerator():
             sigmaX=float(sigma), sigmaY=float(sigma),
             borderType=cv2.BORDER_REPLICATE
         )
-        # ---- Minimal fix ends here ----
-        
-        # Normalize saliency map to [0, 255] range (display-friendly; metrics can re-normalize internally)
-        if saliency_map.max() > 0:
-            saliency_map = cv2.normalize(saliency_map, None, 0, 255, cv2.NORM_MINMAX)
         
         if not return_overlay:
             return saliency_map
         
-        # Enhance contrast for better visualization
+        overlay = self.create_overlay(image_path, saliency_map, alpha)
+        return saliency_map, overlay
+
+    @staticmethod
+    def create_overlay(image_path: str, saliency_map: np.ndarray, alpha: float = 0.6) -> np.ndarray:
+        # Load and validate image
+        if isinstance(image_path, np.ndarray):
+            image_ = image_path
+        else:
+            image_ = cv2.imread(image_path)
+        if image_ is None:
+            raise ValueError(f"Could not load image from path: {image_path}")
+        
+        height, width = image_.shape[:2]
         saliency_map_visualization = np.power(saliency_map, 1.5)
         saliency_map_visualization = cv2.normalize(saliency_map_visualization, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
 
@@ -83,8 +90,7 @@ class SaliencyGenerator():
         
         # Blend saliency map with the original image
         overlay = cv2.addWeighted(image_, 1 - alpha, heatmap, alpha, 0)
-        
-        return saliency_map, overlay
+        return overlay
 
     def create_overlay_and_save_saliency_map(self, image: str, saliency_map: np.ndarray, alpha: float = 0.6, folder: str = None, figure_name: str = None) -> np.ndarray:
         """

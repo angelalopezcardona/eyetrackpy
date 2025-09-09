@@ -8,22 +8,10 @@ from skimage.filters import threshold_otsu
 class SaliencyGenerator():
  
     def generate_saliency_map(self, image_path: str, fixations: np.ndarray, scale_fixations: bool = True, 
-                             sigma: int = 60, alpha: float = 0.6, weight_factor: float = 3.0, 
-                             return_overlay: bool = False) -> np.ndarray:
+                          sigma: int = 60, alpha: float = 0.6, weight_factor: float = 3.0, 
+                          return_overlay: bool = False) -> np.ndarray:
         """
         Generates a saliency map based on multiple fixation points.
-
-        Args:
-            image_path (str): Path to the input image.
-            fixations (np.ndarray): Array of (x, y) fixation points.
-            scale_fixations (bool): Whether to scale fixations to image dimensions.
-            sigma (int): Standard deviation for Gaussian blobs (higher = more spread).
-            alpha (float): Opacity of the saliency map overlay (0-1).
-            weight_factor (float): Multiplier to enhance fixation visibility.
-            return_overlay (bool): If True, return overlay image; if False, return saliency map.
-
-        Returns:
-            np.ndarray: Saliency map overlay or raw saliency map based on return_overlay parameter.
         """
         # Load and validate image
         if isinstance(image_path, np.ndarray):
@@ -34,7 +22,7 @@ class SaliencyGenerator():
             raise ValueError(f"Could not load image from path: {image_path}")
         
         height, width = image_.shape[:2]
-        
+        sigma = min(sigma, min(width, height) // 10)  # Ensure sigma is reasonable
         # Validate and process fixations
         if len(fixations) == 0:
             raise ValueError("No fixation points provided")
@@ -51,31 +39,27 @@ class SaliencyGenerator():
         for (x, y) in fixations:
             if 0 <= x < width and 0 <= y < height:
                 valid_fixations.append((x, y))
-        
         if len(valid_fixations) == 0:
             raise ValueError("No valid fixation points found within image boundaries")
         
-        # Initialize saliency map
-        saliency_map = np.zeros((height, width), dtype=np.float32)
-        
-        # Calculate kernel size for Gaussian blur (should be odd and related to sigma)
-        kernel_size = max(3, int(sigma * 2 + 1))
-        if kernel_size % 2 == 0:
-            kernel_size += 1  # Ensure odd kernel size
-        
-        # Generate saliency map from fixations
+        # ---- Minimal fix starts here ----
+        # Build an impulse map (delta peaks) instead of drawing disks and blurring each one
+        impulse = np.zeros((height, width), dtype=np.float32)
         for (x, y) in valid_fixations:
-            # Create Gaussian blob at fixation point
-            gaussian = np.zeros((height, width), dtype=np.float32)
-            cv2.circle(gaussian, (int(x), int(y)), sigma, 255 * weight_factor, -1)
-            
-            # Apply proper Gaussian blur
-            gaussian = cv2.GaussianBlur(gaussian, (kernel_size, kernel_size), sigma)
-            
-            # Accumulate to saliency map
-            saliency_map += gaussian
+            # accumulate weight per fixation (use weight_factor as a simple multiplier)
+            impulse[y, x] += float(weight_factor)
+
+        # Single Gaussian blur over the whole impulse map
+        # kernel size ~ cover ±3σ
+        ksize = int(2 * np.ceil(3 * float(sigma)) + 1)
+        saliency_map = cv2.GaussianBlur(
+            impulse, (ksize, ksize),
+            sigmaX=float(sigma), sigmaY=float(sigma),
+            borderType=cv2.BORDER_REPLICATE
+        )
+        # ---- Minimal fix ends here ----
         
-        # Normalize saliency map to [0, 255] range
+        # Normalize saliency map to [0, 255] range (display-friendly; metrics can re-normalize internally)
         if saliency_map.max() > 0:
             saliency_map = cv2.normalize(saliency_map, None, 0, 255, cv2.NORM_MINMAX)
         
@@ -101,7 +85,6 @@ class SaliencyGenerator():
         overlay = cv2.addWeighted(image_, 1 - alpha, heatmap, alpha, 0)
         
         return saliency_map, overlay
-    
 
     def create_overlay_and_save_saliency_map(self, image: str, saliency_map: np.ndarray, alpha: float = 0.6, folder: str = None, figure_name: str = None) -> np.ndarray:
         """

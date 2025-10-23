@@ -4,25 +4,40 @@ import cv2
 import numpy as np
 import pandas as pd
 from skimage.filters import threshold_otsu
+from PIL import Image
 
 class SaliencyGenerator():
  
     def generate_saliency_map(self, image_path: str, fixations: np.ndarray, scale_fixations: bool = True, 
                           sigma: int = 60, alpha: float = 0.6, weight_factor: float = 3.0, 
-                          return_overlay: bool = False) -> np.ndarray:
+                          return_overlay: bool = False, normalize: bool = True) -> np.ndarray:
         """
         Generates a saliency map based on multiple fixation points.
+        
+        Args:
+            image_path: Path to image or image array
+            fixations: Array of fixation points (x, y coordinates)
+            scale_fixations: Whether to scale fixations to image dimensions
+            sigma: Gaussian blur sigma (higher = more spread)
+            alpha: Overlay transparency (0-1)
+            weight_factor: Weight per fixation point (higher = stronger saliency)
+            return_overlay: Whether to return overlay visualization
+            normalize: Whether to normalize output to [0, 1] range
         """
         # Load and validate image
         if isinstance(image_path, np.ndarray):
             image_ = image_path
+        elif isinstance(image_path, Image.Image):
+            # Convert PIL image to numpy array (RGB to BGR for OpenCV)
+            image_ = cv2.cvtColor(np.array(image_path), cv2.COLOR_RGB2BGR)
         else:
             image_ = cv2.imread(image_path)
         if image_ is None:
             raise ValueError(f"Could not load image from path: {image_path}")
         
         height, width = image_.shape[:2]
-        sigma = min(sigma, min(width, height) // 10)  # Ensure sigma is reasonable
+        # More flexible sigma constraint - allow larger values for better spread
+        sigma = min(sigma, min(width, height) // 5)  # Allow up to 20% of smaller dimension
         # Validate and process fixations
         if len(fixations) == 0:
             raise ValueError("No fixation points provided")
@@ -57,6 +72,12 @@ class SaliencyGenerator():
             borderType=cv2.BORDER_REPLICATE
         )
         
+        # Normalize to [0, 1] range if requested (matches generative model scales)
+        if normalize:
+            max_val = np.max(saliency_map)
+            if max_val > 0:
+                saliency_map = saliency_map / max_val
+        
         if not return_overlay:
             return saliency_map
         
@@ -68,6 +89,9 @@ class SaliencyGenerator():
         # Load and validate image
         if isinstance(image_path, np.ndarray):
             image_ = image_path
+        elif isinstance(image_path, Image.Image):
+            # Convert PIL image to numpy array (RGB to BGR for OpenCV)
+            image_ = cv2.cvtColor(np.array(image_path), cv2.COLOR_RGB2BGR)
         else:
             image_ = cv2.imread(image_path)
         if image_ is None:
@@ -105,6 +129,9 @@ class SaliencyGenerator():
         # Load and validate image
         if isinstance(image, np.ndarray):
             image_ = image
+        elif isinstance(image, Image.Image):
+            # Convert PIL image to numpy array (RGB to BGR for OpenCV)
+            image_ = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
         else:
             image_ = cv2.imread(image)
         
@@ -184,9 +211,13 @@ class SaliencyGenerator():
         Returns:
             tuple: (coverage (float), used threshold (float))
         """
+        if np.max(saliency_map) <= 1:
+            saliency_map_coverage = saliency_map * 255
+        else:
+            saliency_map_coverage = saliency_map
         if threshold is None:
-            threshold = threshold_otsu(saliency_map)
-        binary_map = saliency_map > threshold
+            threshold = threshold_otsu(saliency_map_coverage)
+        binary_map = saliency_map_coverage > threshold
         coverage = np.sum(binary_map) / binary_map.size
         return coverage, threshold
 

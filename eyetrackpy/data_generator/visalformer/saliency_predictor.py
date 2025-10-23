@@ -90,8 +90,16 @@ class VisalformerSaliencyPredictor:
             np.save(f"{results_path_saliency}/saliency_trial_{trial_num}.npy", saliency_map)
             
             # For VISUALIZATION: Resize to match original image (only for display)
-            saliency_pil = Image.fromarray((saliency_map * 255).astype(np.uint8))
-            saliency_resized = saliency_pil.resize((img_width, img_height), Image.BILINEAR)
+            # Check if saliency map is in [0,1] or [0,255] range
+            if saliency_map.max() <= 1.0:
+                # Values are in [0,1] range, multiply by 255
+                saliency_for_pil = (saliency_map * 255).astype(np.uint8)
+            else:
+                # Values are already in [0,255] range
+                saliency_for_pil = saliency_map.astype(np.uint8)
+            
+            saliency_pil = Image.fromarray(saliency_for_pil)
+            saliency_resized = saliency_pil.resize((img_width, img_height), Image.LANCZOS)
             saliency_for_visualization = np.array(saliency_resized) / 255.0
             
             # Plot

@@ -154,7 +154,24 @@ class EyeTrackingDataUserSet():
                 files[trial] = file
 
         return files
-    
+    @staticmethod
+    def search_word_coor_fixations_files_prompts(folder):
+        if isinstance(folder, str):
+            folder = pathlib.Path(folder)
+        file_paths = list(folder.rglob("*"))
+        files = {}
+        pattern = r"word_cor_image_fixations_(\d+\.\d+)"
+        for file in file_paths:
+            # The regex pattern
+            # Perform the match
+            match = re.search(pattern, str(file))
+            # Check if there is a match and extract the number
+            if match:
+                trial = match.group(1)
+                files[trial] = file
+
+        return files
+
     @staticmethod
     def _read_coor_trial(file):
         data_trial = pd.read_csv(

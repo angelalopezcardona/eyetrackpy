@@ -26,7 +26,6 @@ path = str(pathlib.Path(__file__).parent.resolve().parent.resolve())
 sys.path.append(path)
 path = str(pathlib.Path(__file__).parent.resolve())
 sys.path.append(path)
-from eye_tracking_data import EyeTrackingData
 import os
 
 import pytesseract

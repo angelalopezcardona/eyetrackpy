@@ -3,13 +3,47 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 def compute_cc(y: torch.Tensor, hm: torch.Tensor):
-    vy = y - torch.mean(y)
-    vhm = hm - torch.mean(hm)  
-    if (torch.sqrt(torch.sum(vy ** 2)) * torch.sqrt(torch.sum(vhm ** 2))) != 0:
-        cc = torch.sum(vy * vhm) / (torch.sqrt(torch.sum(vy ** 2)) * torch.sqrt(torch.sum(vhm ** 2)))
-    else: 
-        cc = torch.Tensor([0.0])
-    return cc
+    """
+    Compute Correlation Coefficient between predicted and ground truth saliency maps.
+    
+    For batched inputs (B, 1, H, W), computes CC per sample and returns mean.
+    For single sample inputs (1, 1, H, W) or (H, W), computes CC over the entire tensor.
+    """
+    # Flatten spatial dimensions but keep batch dimension
+    if y.dim() == 4:  # (B, 1, H, W) or (B, C, H, W)
+        # Compute CC per sample in batch
+        y_flat = y.view(y.shape[0], -1)  # (B, H*W)
+        hm_flat = hm.view(hm.shape[0], -1)  # (B, H*W)
+        
+        # Compute mean per sample
+        y_mean = y_flat.mean(dim=1, keepdim=True)  # (B, 1)
+        hm_mean = hm_flat.mean(dim=1, keepdim=True)  # (B, 1)
+        
+        # Center the data
+        vy = y_flat - y_mean  # (B, H*W)
+        vhm = hm_flat - hm_mean  # (B, H*W)
+        
+        # Compute CC per sample
+        numerator = (vy * vhm).sum(dim=1)  # (B,)
+        denom_y = torch.sqrt((vy ** 2).sum(dim=1))  # (B,)
+        denom_hm = torch.sqrt((vhm ** 2).sum(dim=1))  # (B,)
+        
+        # Avoid division by zero
+        denominator = denom_y * denom_hm
+        cc_per_sample = numerator / (denominator + 1e-10)
+        cc_per_sample = torch.where(denominator > 1e-10, cc_per_sample, torch.zeros_like(cc_per_sample))
+        
+        # Return mean CC over batch
+        return cc_per_sample.mean()
+    else:
+        # Single sample: compute over entire tensor (original behavior)
+        vy = y - torch.mean(y)
+        vhm = hm - torch.mean(hm)  
+        if (torch.sqrt(torch.sum(vy ** 2)) * torch.sqrt(torch.sum(vhm ** 2))) != 0:
+            cc = torch.sum(vy * vhm) / (torch.sqrt(torch.sum(vy ** 2)) * torch.sqrt(torch.sum(vhm ** 2)))
+        else: 
+            cc = torch.Tensor([0.0])
+        return cc
 
 
 def compute_kl(y: torch.Tensor, hm: torch.Tensor):

@@ -50,18 +50,15 @@ def compute_kl(y: torch.Tensor, hm: torch.Tensor):
     eps = 1e-10
     kl_loss = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
 
-    # Normalize to distributions (same as old evaluation.py)
     y_sum = y.view(y.shape[0], -1).sum(1, keepdim=True)
     y_distribution = y / (y_sum[:, :, None, None] + eps)
 
     hm_sum = hm.view(hm.shape[0], -1).sum(1, keepdim=True)
     hm_distribution = hm / (hm_sum[:, :, None, None] + eps)
     
-    # Match old evaluation.py: add eps and renormalize for hm_distribution
     hm_distribution = hm_distribution + eps
     hm_distribution = hm_distribution / (1 + eps)
 
-    # KL(gt || model) - old code uses log_target=True, so both are logged
     kl = kl_loss(torch.log(y_distribution), torch.log(hm_distribution))
     return kl
 

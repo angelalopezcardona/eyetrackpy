@@ -171,3 +171,4 @@ eyetrackpy/data_generator/fixations_predictor_trained_2/model.pth
 cache/
 eyetrackpy/data_generator/fixations_predictor_mdsem/mdsem_codecharts0_cameraready_weights.hdf5
 eyetrackpy/data_generator/visalformer/VisSalFormer_weights.tar
+eyetrackpy/data_generator/visalformer/best_model.pth

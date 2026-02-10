@@ -47,19 +47,30 @@ def compute_cc(y: torch.Tensor, hm: torch.Tensor):
 
 
 def compute_kl(y: torch.Tensor, hm: torch.Tensor):
-    eps = 1e-10
-    kl_loss = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
+    """
+    Compute KL divergence between predicted and ground truth saliency maps.
 
+    This implementation is numerically stable and matches the standard
+    PyTorch `KLDivLoss` usage:
+      - `input` is log-probabilities
+      - `target` is (non-log) probabilities
+    """
+    eps = 1e-10
+    kl_loss = torch.nn.KLDivLoss(reduction="batchmean")
+
+    # Normalize to probability distributions
     y_sum = y.view(y.shape[0], -1).sum(1, keepdim=True)
     y_distribution = y / (y_sum[:, :, None, None] + eps)
 
     hm_sum = hm.view(hm.shape[0], -1).sum(1, keepdim=True)
     hm_distribution = hm / (hm_sum[:, :, None, None] + eps)
-    
-    hm_distribution = hm_distribution + eps
-    hm_distribution = hm_distribution / (1 + eps)
 
-    kl = kl_loss(torch.log(y_distribution), torch.log(hm_distribution))
+    # Clamp to avoid log(0) and ensure valid probabilities
+    y_distribution = y_distribution.clamp_min(eps)
+    hm_distribution = hm_distribution.clamp_min(eps)
+
+    # Input: log-probabilities, Target: probabilities
+    kl = kl_loss(torch.log(y_distribution), hm_distribution)
     return kl
 
 def compute_nss(y: torch.Tensor, fix: torch.Tensor):

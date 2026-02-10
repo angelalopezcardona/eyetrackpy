@@ -21,20 +21,30 @@ from eyetrackpy.data_generator.fixations_predictor.models.model_manager import d
 
 
 class VisalformerSaliencyPredictor:
-    def __init__(self, device=None):
-        model_name = "visalformer"
+    def __init__(self, device=None, model_name = "visalformer"):
+        self.model_name = model_name
 
         cwd = os.path.dirname(os.getcwd())
-        trained_weights_path = os.path.join(
-            cwd,
-            "eyetrackpy",
-            "eyetrackpy",
-            "data_generator",
-            "visalformer",
-            "VisSalFormer_weights.tar",
-        )
+        if self.model_name == "visalformer":
+            trained_weights_path = os.path.join(
+                cwd,
+                "eyetrackpy",
+                "eyetrackpy",
+                "data_generator",
+                "visalformer",
+                "VisSalFormer_weights.tar",
+            )
+        else:
+            trained_weights_path = os.path.join(
+                cwd,
+                "eyetrackpy",
+                "eyetrackpy",
+                "data_generator",
+                "visalformer",
+                "best_model.pth",
+            )
         if not os.path.isfile(trained_weights_path):
-            download_model(model_name)
+            download_model(self.model_name)
         if device is None:
             device = 'cuda' if torch.cuda.is_available() else 'cpu'
         
@@ -54,7 +64,7 @@ class VisalformerSaliencyPredictor:
         self.model = model
 
     
-    def predict(self, dataloader, save_path):
+    def predict(self, dataloader, save_path, sharpen_saliency=False):
      
         results_path_saliency = save_path + '/saliency'
         results_path_all = save_path + '/all'
@@ -65,11 +75,35 @@ class VisalformerSaliencyPredictor:
             img = img.to(self.device)
             input_ids = input_ids.to(self.device)
             predictions = self.model(img, input_ids)
+            if sharpen_saliency:
+                predictions= [ self.sharpen_saliency(p.detach().cpu().squeeze().numpy(), gamma=1.0) for p in predictions]
+            predictions = torch.tensor(predictions).to(self.device)
             self.postprocess_predictions(original_images, predictions, results_path_saliency, results_path_all, trial_numbers)
         return predictions
     
 
-    
+   
+
+    def sharpen_saliency(self,saliency_map, gamma=3):
+        """
+        Sharpen a normalized saliency map using Power Transformation.
+        
+        Args:
+            saliency_map (np.array): 2D array normalized between [0, 1]
+            gamma (float): Values > 1 sharpen/concentrate the map. 
+                        Values < 1 spread it out.
+        Returns:
+            np.array: Sharpened and re-normalized saliency map.
+        """
+        # 1. Apply Power Transformation
+        # High values stay high, low-to-mid values drop significantly
+        sharpened = np.power(saliency_map, gamma)
+        
+        # 2. Re-normalize to ensure the peak is exactly 1.0 again
+        if sharpened.max() > 0:
+            sharpened = sharpened / sharpened.max()
+            
+        return sharpened
     def postprocess_predictions(self, original_images, predictions, results_path_saliency, results_path_all, trial_numbers):
         for i in range(0, predictions.shape[0]):
             trial_num = trial_numbers[i] if trial_numbers else i
